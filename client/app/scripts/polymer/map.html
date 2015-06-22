@@ -5,22 +5,31 @@
 <google-map-search id="search" query="{{mapQuery}}" result="{{result}}"></google-map-search>
 <google-map id="map" zoomable=true disableDefaultUI=true latitude="{{latitude}}" longitude="{{longitude}}">
 </google-map>
-<input value="{{query}}">
-<p class="lat-long">lat/long: ({{markerLat}}, {{markerLng}})</p>
+<div class="control-holder">
+  <input class="search"  value="{{query}}">
+  <input class="sat-btn" name=sat type=checkbox checked="{{sat}}"><label for=sat>Sat</label>
+  <p class="lat-long">lat/long: ({{markerLat}}, {{markerLng}})</p>
+</div>
   <style>
-    .lat-long {
+    .control-holder{
       position: absolute;
-      top: 29px;
-      left: 32px;
+      width: 80%;
+      top: 15px;
+      left: 28px;
       font-size: 55%;
       color: black;
       text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
     }
-    input {
-      position: absolute;
-      top: 15px;
-      left: 28px;
+    .lat-long {
+      display: block;
+      margin: 0;
     }
+    .search {
+      display: inline-block;
+      width: 40%;
+    }
+    .sat-btn {}
+    label {}
     google-map {
       display: block;
       width: 100%;
@@ -35,6 +44,11 @@
 <script>
   Polymer('sw-map',{
     result: '',
+    sat: false,
+    satChanged: function(oldValue,newValue) {
+      this.$.map.mapType = this.$.map.mapType === 'satellite'
+        ? 'roadmap' : 'satellite';
+    },
     queryChanged: function(oldValue,newValue) {
       this.job('setQuery', function() {
         this.mapQuery = newValue;
@@ -59,6 +73,7 @@
         var map = that.$.map.map;
         that.$.search.map = map;
         map.set("disableDoubleClickZoom", true);
+        that.$.map.zoom = 17;
         that.marker = new google.maps.Marker({
           position: map.getCenter(),
           draggable: true,
